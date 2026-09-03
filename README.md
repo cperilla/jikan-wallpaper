@@ -1,3 +1,4 @@
+# DISCLAIMER: AI SLOP: This was completely vibe coded but works
 # jikan (時間)
 
 A generated desktop wallpaper: a sparse, low-contrast Japanese almanac —
