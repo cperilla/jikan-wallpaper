@@ -1,0 +1,652 @@
+{
+  "microseasons": [
+    {
+      "index": 0,
+      "sekki_index": 0,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "雀始巣",
+      "reading_romaji": "suzume hajimete sukuu",
+      "gloss_en": "Sparrows start to nest"
+    },
+    {
+      "index": 1,
+      "sekki_index": 0,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "桜始開",
+      "reading_romaji": "sakura hajimete hiraku",
+      "gloss_en": "First cherry blossoms"
+    },
+    {
+      "index": 2,
+      "sekki_index": 0,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "雷乃発声",
+      "reading_romaji": "kaminari sunawachi koe o hassu",
+      "gloss_en": "Distant thunder"
+    },
+    {
+      "index": 3,
+      "sekki_index": 1,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "玄鳥至",
+      "reading_romaji": "tsubame kitaru",
+      "gloss_en": "Swallows return"
+    },
+    {
+      "index": 4,
+      "sekki_index": 1,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "鴻雁北",
+      "reading_romaji": "kōgan kaeru",
+      "gloss_en": "Wild geese fly north"
+    },
+    {
+      "index": 5,
+      "sekki_index": 1,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "虹始見",
+      "reading_romaji": "niji hajimete arawaru",
+      "gloss_en": "First rainbows"
+    },
+    {
+      "index": 6,
+      "sekki_index": 2,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "葭始生",
+      "reading_romaji": "ashi hajimete shōzu",
+      "gloss_en": "First reeds sprout"
+    },
+    {
+      "index": 7,
+      "sekki_index": 2,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "霜止出苗",
+      "reading_romaji": "shimo yamite nae izuru",
+      "gloss_en": "Last frost, rice seedlings grow"
+    },
+    {
+      "index": 8,
+      "sekki_index": 2,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "牡丹華",
+      "reading_romaji": "botan hana saku",
+      "gloss_en": "Peonies bloom"
+    },
+    {
+      "index": 9,
+      "sekki_index": 3,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "蛙始鳴",
+      "reading_romaji": "kawazu hajimete naku",
+      "gloss_en": "Frogs start singing"
+    },
+    {
+      "index": 10,
+      "sekki_index": 3,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "蚯蚓出",
+      "reading_romaji": "mimizu izuru",
+      "gloss_en": "Worms surface"
+    },
+    {
+      "index": 11,
+      "sekki_index": 3,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "竹笋生",
+      "reading_romaji": "takenoko shōzu",
+      "gloss_en": "Bamboo shoots sprout"
+    },
+    {
+      "index": 12,
+      "sekki_index": 4,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "蚕起食桑",
+      "reading_romaji": "kaiko okite kuwa o hamu",
+      "gloss_en": "Silkworms start feasting on mulberry leaves"
+    },
+    {
+      "index": 13,
+      "sekki_index": 4,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "紅花栄",
+      "reading_romaji": "benibana sakau",
+      "gloss_en": "Safflowers bloom"
+    },
+    {
+      "index": 14,
+      "sekki_index": 4,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "麦秋至",
+      "reading_romaji": "mugi no toki itaru",
+      "gloss_en": "Wheat ripens and is harvested"
+    },
+    {
+      "index": 15,
+      "sekki_index": 5,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "蟷螂生",
+      "reading_romaji": "kamakiri shōzu",
+      "gloss_en": "Praying mantises hatch"
+    },
+    {
+      "index": 16,
+      "sekki_index": 5,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "腐草為螢",
+      "reading_romaji": "kusaretaru kusa hotaru to naru",
+      "gloss_en": "Rotten grass becomes fireflies"
+    },
+    {
+      "index": 17,
+      "sekki_index": 5,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "梅子黄",
+      "reading_romaji": "ume no mi kibamu",
+      "gloss_en": "Plums turn yellow"
+    },
+    {
+      "index": 18,
+      "sekki_index": 6,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "乃東枯",
+      "reading_romaji": "natsukarekusa karuru",
+      "gloss_en": "Self-heal withers"
+    },
+    {
+      "index": 19,
+      "sekki_index": 6,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "菖蒲華",
+      "reading_romaji": "ayame hana saku",
+      "gloss_en": "Irises bloom"
+    },
+    {
+      "index": 20,
+      "sekki_index": 6,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "半夏生",
+      "reading_romaji": "hange shōzu",
+      "gloss_en": "Crow-dipper sprouts"
+    },
+    {
+      "index": 21,
+      "sekki_index": 7,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "温風至",
+      "reading_romaji": "atsukaze itaru",
+      "gloss_en": "Warm winds blow"
+    },
+    {
+      "index": 22,
+      "sekki_index": 7,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "蓮始開",
+      "reading_romaji": "hasu hajimete hiraku",
+      "gloss_en": "First lotus blossoms"
+    },
+    {
+      "index": 23,
+      "sekki_index": 7,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "鷹乃学習",
+      "reading_romaji": "taka sunawachi waza o narau",
+      "gloss_en": "Hawks learn to fly"
+    },
+    {
+      "index": 24,
+      "sekki_index": 8,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "桐始結花",
+      "reading_romaji": "kiri hajimete hana o musubu",
+      "gloss_en": "Paulownia trees produce seeds"
+    },
+    {
+      "index": 25,
+      "sekki_index": 8,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "土潤溽暑",
+      "reading_romaji": "tsuchi uruōte mushiatsushi",
+      "gloss_en": "Earth is damp, air is humid"
+    },
+    {
+      "index": 26,
+      "sekki_index": 8,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "大雨時行",
+      "reading_romaji": "taiu tokidoki furu",
+      "gloss_en": "Great rains sometimes fall"
+    },
+    {
+      "index": 27,
+      "sekki_index": 9,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "涼風至",
+      "reading_romaji": "suzukaze itaru",
+      "gloss_en": "Cool winds blow"
+    },
+    {
+      "index": 28,
+      "sekki_index": 9,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "寒蝉鳴",
+      "reading_romaji": "higurashi naku",
+      "gloss_en": "Evening cicadas sing"
+    },
+    {
+      "index": 29,
+      "sekki_index": 9,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "蒙霧升降",
+      "reading_romaji": "fukaki kiri matō",
+      "gloss_en": "Thick fog descends"
+    },
+    {
+      "index": 30,
+      "sekki_index": 10,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "綿柎開",
+      "reading_romaji": "wata no hana shibe hiraku",
+      "gloss_en": "Cotton flowers bloom"
+    },
+    {
+      "index": 31,
+      "sekki_index": 10,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "天地始粛",
+      "reading_romaji": "tenchi hajimete samushi",
+      "gloss_en": "Heat starts to die down"
+    },
+    {
+      "index": 32,
+      "sekki_index": 10,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "禾乃登",
+      "reading_romaji": "kokumotsu sunawachi minoru",
+      "gloss_en": "Rice ripens"
+    },
+    {
+      "index": 33,
+      "sekki_index": 11,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "草露白",
+      "reading_romaji": "kusa no tsuyu shiroshi",
+      "gloss_en": "Dew glistens white on grass"
+    },
+    {
+      "index": 34,
+      "sekki_index": 11,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "鶺鴒鳴",
+      "reading_romaji": "sekirei naku",
+      "gloss_en": "Wagtails sing"
+    },
+    {
+      "index": 35,
+      "sekki_index": 11,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "玄鳥去",
+      "reading_romaji": "tsubame saru",
+      "gloss_en": "Swallows leave"
+    },
+    {
+      "index": 36,
+      "sekki_index": 12,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "雷乃収声",
+      "reading_romaji": "kaminari sunawachi koe o osamu",
+      "gloss_en": "Thunder ceases"
+    },
+    {
+      "index": 37,
+      "sekki_index": 12,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "蟄虫坏戸",
+      "reading_romaji": "mushi kakurete to o fusagu",
+      "gloss_en": "Insects hole up underground"
+    },
+    {
+      "index": 38,
+      "sekki_index": 12,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "水始涸",
+      "reading_romaji": "mizu hajimete karuru",
+      "gloss_en": "Farmers drain fields"
+    },
+    {
+      "index": 39,
+      "sekki_index": 13,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "鴻雁来",
+      "reading_romaji": "kōgan kitaru",
+      "gloss_en": "Wild geese return"
+    },
+    {
+      "index": 40,
+      "sekki_index": 13,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "菊花開",
+      "reading_romaji": "kiku no hana hiraku",
+      "gloss_en": "Chrysanthemums bloom"
+    },
+    {
+      "index": 41,
+      "sekki_index": 13,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "蟋蟀在戸",
+      "reading_romaji": "kirigirisu to ni ari",
+      "gloss_en": "Crickets chirp around the door"
+    },
+    {
+      "index": 42,
+      "sekki_index": 14,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "霜始降",
+      "reading_romaji": "shimo hajimete furu",
+      "gloss_en": "First frost"
+    },
+    {
+      "index": 43,
+      "sekki_index": 14,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "霎時施",
+      "reading_romaji": "kosame tokidoki furu",
+      "gloss_en": "Light rains sometimes fall"
+    },
+    {
+      "index": 44,
+      "sekki_index": 14,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "楓蔦黄",
+      "reading_romaji": "momiji tsuta kibamu",
+      "gloss_en": "Maple leaves and ivy turn yellow"
+    },
+    {
+      "index": 45,
+      "sekki_index": 15,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "山茶始開",
+      "reading_romaji": "tsubaki hajimete hiraku",
+      "gloss_en": "Camellias bloom"
+    },
+    {
+      "index": 46,
+      "sekki_index": 15,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "地始凍",
+      "reading_romaji": "chi hajimete kōru",
+      "gloss_en": "Land starts to freeze"
+    },
+    {
+      "index": 47,
+      "sekki_index": 15,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "金盞香",
+      "reading_romaji": "kinsenka saku",
+      "gloss_en": "Daffodils bloom"
+    },
+    {
+      "index": 48,
+      "sekki_index": 16,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "虹蔵不見",
+      "reading_romaji": "niji kakurete miezu",
+      "gloss_en": "Rainbows hide, no longer seen"
+    },
+    {
+      "index": 49,
+      "sekki_index": 16,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "朔風払葉",
+      "reading_romaji": "kitakaze konoha o harau",
+      "gloss_en": "North wind blows leaves off trees"
+    },
+    {
+      "index": 50,
+      "sekki_index": 16,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "橘始黄",
+      "reading_romaji": "tachibana hajimete kibamu",
+      "gloss_en": "Tachibana citrus leaves start to turn yellow"
+    },
+    {
+      "index": 51,
+      "sekki_index": 17,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "閉塞成冬",
+      "reading_romaji": "sora samuku fuyu to naru",
+      "gloss_en": "Cold sets in, winter begins"
+    },
+    {
+      "index": 52,
+      "sekki_index": 17,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "熊蟄穴",
+      "reading_romaji": "kuma ana ni komoru",
+      "gloss_en": "Bears start hibernating in their dens"
+    },
+    {
+      "index": 53,
+      "sekki_index": 17,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "鱖魚群",
+      "reading_romaji": "sake no uo muragaru",
+      "gloss_en": "Salmon gather and swim upstream"
+    },
+    {
+      "index": 54,
+      "sekki_index": 18,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "乃東生",
+      "reading_romaji": "natsukarekusa shōzu",
+      "gloss_en": "Self-heal sprouts"
+    },
+    {
+      "index": 55,
+      "sekki_index": 18,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "麋角解",
+      "reading_romaji": "sawashika no tsuno otsuru",
+      "gloss_en": "Deer shed antlers"
+    },
+    {
+      "index": 56,
+      "sekki_index": 18,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "雪下出麦",
+      "reading_romaji": "yuki watarite mugi nobiru",
+      "gloss_en": "Wheat sprouts under snow"
+    },
+    {
+      "index": 57,
+      "sekki_index": 19,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "芹乃栄",
+      "reading_romaji": "seri sunawachi sakau",
+      "gloss_en": "Parsley flourishes"
+    },
+    {
+      "index": 58,
+      "sekki_index": 19,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "水泉動",
+      "reading_romaji": "shimizu atataka o fukumu",
+      "gloss_en": "Springs thaw"
+    },
+    {
+      "index": 59,
+      "sekki_index": 19,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "雉始雊",
+      "reading_romaji": "kiji hajimete naku",
+      "gloss_en": "Pheasants start to call"
+    },
+    {
+      "index": 60,
+      "sekki_index": 20,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "款冬華",
+      "reading_romaji": "fuki no hana saku",
+      "gloss_en": "Butterburs bud"
+    },
+    {
+      "index": 61,
+      "sekki_index": 20,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "水沢腹堅",
+      "reading_romaji": "sawamizu kōri tsumeru",
+      "gloss_en": "Ice thickens on streams"
+    },
+    {
+      "index": 62,
+      "sekki_index": 20,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "鶏始乳",
+      "reading_romaji": "niwatori hajimete toya ni tsuku",
+      "gloss_en": "Hens start laying eggs"
+    },
+    {
+      "index": 63,
+      "sekki_index": 21,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "東風解凍",
+      "reading_romaji": "harukaze kōri o toku",
+      "gloss_en": "East wind melts the ice"
+    },
+    {
+      "index": 64,
+      "sekki_index": 21,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "黄鶯睍睆",
+      "reading_romaji": "kōō kenkan su",
+      "gloss_en": "Bush warblers start singing in the mountains"
+    },
+    {
+      "index": 65,
+      "sekki_index": 21,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "魚上氷",
+      "reading_romaji": "uo kōri o izuru",
+      "gloss_en": "Fish emerge from the ice"
+    },
+    {
+      "index": 66,
+      "sekki_index": 22,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "土脉潤起",
+      "reading_romaji": "tsuchi no shō uruoi okoru",
+      "gloss_en": "Rain moistens the soil"
+    },
+    {
+      "index": 67,
+      "sekki_index": 22,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "霞始靆",
+      "reading_romaji": "kasumi hajimete tanabiku",
+      "gloss_en": "Mist starts to linger"
+    },
+    {
+      "index": 68,
+      "sekki_index": 22,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "草木萌動",
+      "reading_romaji": "sōmoku mebae izuru",
+      "gloss_en": "Grass sprouts, trees bud"
+    },
+    {
+      "index": 69,
+      "sekki_index": 23,
+      "sub_index": 0,
+      "sub_label_ja": "初候",
+      "name_ja": "蟄虫啓戸",
+      "reading_romaji": "sugomori mushi to o hiraku",
+      "gloss_en": "Hibernating insects surface"
+    },
+    {
+      "index": 70,
+      "sekki_index": 23,
+      "sub_index": 1,
+      "sub_label_ja": "次候",
+      "name_ja": "桃始笑",
+      "reading_romaji": "momo hajimete warau",
+      "gloss_en": "First peach blossoms"
+    },
+    {
+      "index": 71,
+      "sekki_index": 23,
+      "sub_index": 2,
+      "sub_label_ja": "末候",
+      "name_ja": "菜虫化蝶",
+      "reading_romaji": "namushi chō to naru",
+      "gloss_en": "Caterpillars become butterflies"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+# jikan -- Japanese almanac wallpaper generator
+# Edit this file and re-run `python main.py` to see changes
+# (or wait for the next scheduled regeneration -- see README.md).
+
+[display]
+width = 2560
+height = 1440
+
+[fonts]
+# Display font: the giant kanji, current month, current solar term.
+# Falls back through the list if a font isn't installed.
+display = ["Dela Gothic One", "Zen Kaku Gothic New", "Noto Sans JP"]
+# UI/detail font: microseason, calendar grid, countdown, annotations.
+text = ["Zen Kaku Gothic New", "Noto Sans JP"]
+
+# Colors are no longer set here -- they're fully driven by the current day
+# segment's palette (palette.py's SEGMENT_PALETTES: night/dawn/day/dusk/
+# evening), smoothly interpolated across the day in OKLab. See README.md.
+
+[kanji]
+mode = "daily"          # "daily" (deterministic by date) or "manual"
+manual = "整"
+list = ["作", "読", "整", "技", "静", "遊", "鍛", "学", "休"]
+
+[modules]
+calendar = true
+kanji = true
+solar_term = true
+microseason = true
+year_progress = true
+day_bar = true
+english_translation = false
+weather = true
+rainfall = true
+solar_geometry = true
+
+[location]
+# Latitude/longitude for sunrise/sunset (day bar), and for the weather/
+# rainfall/solar-geometry modules. Example below is Tokyo -- replace with
+# your own coordinates.
+latitude = 35.676200
+longitude = 139.650300
+
+[weather]
+# Current-conditions provider for the 天 module. Fetched fresh each render;
+# falls back to the last successful response (~/.local/state/jikan/
+# weather_cache.json) if the network/API is unavailable, and omits the
+# module entirely if no cached data exists either -- see weather.py.
+provider = "open-meteo"
+timeout_seconds = 4.0
+
+[rainfall]
+# Static climatology data for the 雨 module (12-month rainfall cycle) --
+# deliberately NOT fetched at render time, since climate normals barely
+# change year to year. Regenerate via `python scripts/fetch_rainfall_climatology.py`.
+data_path = "data/rainfall_climatology.json"
+
+[house]
+# Rotation of the house's cardinal faces, degrees clockwise from true
+# north (0 = perfectly N/E/S/W-aligned rectangle, door facing due south).
+# Only affects the solar-geometry house/compass diagram (日 module).
+#
+# To calibrate for your own house: stand at your front door facing
+# outward (away from the house) and take a compass bearing of that
+# direction (a phone compass app is fine). That bearing IS your
+# rotation_deg directly, per the base-azimuth convention in
+# _house_diagram_svg/_FACE_BASE_AZ (front=180, right=90, back=0, left=270
+# at rotation_deg=0) -- e.g. a door facing due east (090) means
+# rotation_deg = (90 - 180) % 360 = 270.
+rotation_deg = 0
+
+[schedule]
+# 24-hour day bar markers (day_bar module). Times are "HH:MM", 24h clock.
+wake = "08:00"
+work_start = "10:00"
+lunch = "12:00"
+lunch_duration_minutes = 60
+work_end = "19:00"
+sleep = "00:00"
+
+[wallpaper]
+setter = "feh"

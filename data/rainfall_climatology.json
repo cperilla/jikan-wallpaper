@@ -1,0 +1,21 @@
+{
+  "source": "NASA POWER Climatology API (MERRA-2), 2001-2020 monthly means",
+  "period": "2001-2020",
+  "latitude": 35.6762,
+  "longitude": 139.6503,
+  "unit": "mm",
+  "monthly_mm": [
+    66.0,
+    66.1,
+    114.7,
+    128.7,
+    142.0,
+    180.6,
+    179.8,
+    154.7,
+    215.1,
+    222.0,
+    97.2,
+    69.1
+  ]
+}
