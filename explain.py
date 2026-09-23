@@ -15,7 +15,7 @@ from config import load_config
 from moon_phase import moon_phase
 from palette import SEGMENT_LABEL_JA, SEGMENT_ORDER
 from rainfall import load_rainfall_climatology
-from renderer import _closest_facade_label, _is_night, resolve_palette
+from renderer import _is_night, _true_compass_label, resolve_palette
 from seasons import current_microseason, current_term
 from solar_times import solar_geometry
 from weather import DEFAULT_CACHE_PATH as WEATHER_CACHE_PATH
@@ -155,8 +155,8 @@ def explain(target_date: date, cfg, now: datetime | None = None) -> str:
     # Solar geometry (日): always computable, pure local astronomy.
     geometry = solar_geometry(target_date, cfg.location.latitude, cfg.location.longitude)
     noon_dir_ch = "北" if geometry.solar_noon_direction == "north" else "南"
-    morning_face = _closest_facade_label(geometry.sunrise_azimuth_deg, cfg.house.rotation_deg)
-    evening_face = _closest_facade_label(geometry.sunset_azimuth_deg, cfg.house.rotation_deg)
+    morning_face = _true_compass_label(geometry.sunrise_azimuth_deg)
+    evening_face = _true_compass_label(geometry.sunset_azimuth_deg)
     lines.append(f"{label}solar geometry (日){_ANSI_RESET}")
     lines.append(f"  日      {_gloss(glossary, '日')}")
     lines.append(f"  日出    {_gloss(glossary, '日出')}   "
