@@ -11,8 +11,11 @@ Three ambient environmental modules sit in the gap between the giant kanji
 and the day bar: current weather (天), a 12-month rainfall climatology (雨 —
 whatever your configured location's actual annual shape is, wet/dry or
 four-season), and solar geometry (日 — sunrise/solar-noon/sunset times,
-azimuth, altitude, and a small house/compass diagram). See "Environmental
-modules" below.
+azimuth, altitude, and a small house/compass diagram). An optional fourth,
+off by default, is a currency module (為替 — today's USD/COP official TRM
+with min/max, a trend arrow, and a GitHub-style weekly strip); it's
+Colombia-specific but doubles as a clean template for any
+fetch-with-cache module. See "Environmental modules" below.
 
 ## Examples
 
@@ -141,7 +144,11 @@ Edit `config.toml`:
   Edit `list` freely -- no auto-generated meanings, just characters you pick.
 - `[modules]` -- toggle each element off independently. `english_translation`
   adds a small gloss under the microseason name. `weather`/`rainfall`/
-  `solar_geometry` toggle the three environmental modules.
+  `solar_geometry` toggle the three environmental modules; `currency`
+  (off by default) toggles the optional 為替 USD/COP module -- see
+  `[currency]` and `currency.py`. It always renders when on, surfacing its
+  state (live / stale-cached / unavailable) instead of vanishing on
+  failure, and is guarded by a cache TTL so it never hammers the API.
 - `[location]` -- latitude/longitude for sunrise/sunset (day bar), and for
   the weather/rainfall/solar-geometry modules.
 - `[schedule]` -- day bar markers: `wake`, `work_start`, `lunch` (+

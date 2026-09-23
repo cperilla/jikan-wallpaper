@@ -25,6 +25,8 @@ from renderer import apply_blocky_noise, compose, rasterize, resolve_palette
 from wallpaper import detect_output_geometries, set_wallpaper
 from weather import DEFAULT_CACHE_PATH as WEATHER_CACHE_PATH
 from weather import get_weather
+from currency import DEFAULT_CACHE_PATH as CURRENCY_CACHE_PATH
+from currency import get_currency
 
 DEFAULT_OUTPUT = Path.home() / ".local" / "state" / "jikan-wallpaper.png"
 DEFAULT_LOCK_OUTPUT = Path.home() / ".local" / "state" / "jikan-lock.png"
@@ -35,7 +37,7 @@ def _parse_date(s: str) -> date:
 
 
 def _render_per_resolution(resolutions, base_path, target_date, seed_str, cfg, now, weather,
-                            climatology, segment_name, lock_mode, preseed=None):
+                            climatology, segment_name, lock_mode, preseed=None, currency=None):
     """One compose()+rasterize()+noise pass per *distinct* resolution --
     each gets its own correctly-scaled composition (the renderer already
     scales every element to whatever cfg.display it's given), never a
@@ -49,7 +51,7 @@ def _render_per_resolution(resolutions, base_path, target_date, seed_str, cfg, n
         variant_path = base_path.with_stem(f"{base_path.stem}-{w}x{h}")
         variant_cfg = replace(cfg, display=replace(cfg.display, width=w, height=h))
         variant_svg = compose(target_date, seed_str, variant_cfg, now=now, weather=weather,
-                               climatology=climatology, lock_mode=lock_mode)
+                               climatology=climatology, lock_mode=lock_mode, currency=currency)
         rasterize(variant_svg, str(variant_path), w, h)
         apply_blocky_noise(str(variant_path), seed_str, block_size=12, intensity=4,
                             segment_name=segment_name)
@@ -87,7 +89,13 @@ def main(argv: list[str] | None = None) -> int:
     weather = get_weather(cfg.location.latitude, cfg.location.longitude,
                            WEATHER_CACHE_PATH, cfg.weather.timeout_seconds)
     climatology = load_rainfall_climatology(Path(__file__).parent / cfg.rainfall.data_path)
-    svg = compose(target_date, seed_str, cfg, now=now, weather=weather, climatology=climatology)
+    # One currency fetch per run, reused everywhere below (like weather).
+    # Its own TTL guard (currency.py) suppresses the network hit entirely
+    # when a recent cache exists.
+    currency = get_currency(CURRENCY_CACHE_PATH, cfg.currency.timeout_seconds,
+                            cfg.currency.min_refresh_seconds)
+    svg = compose(target_date, seed_str, cfg, now=now, weather=weather, climatology=climatology,
+                  currency=currency)
     rasterize(svg, str(output_path), cfg.display.width, cfg.display.height)
 
     _, active_segment_idx, _, _ = resolve_palette(target_date, now, cfg)
@@ -110,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
             resolutions, output_path, target_date, seed_str, cfg, now, weather, climatology,
             segment_name, lock_mode=False,
             preseed={(cfg.display.width, cfg.display.height): output_path},
+            currency=currency,
         )
         paths = [str(rendered[(w, h)]) for w, h in resolutions]
         set_wallpaper(paths, cfg.wallpaper.setter)
@@ -137,6 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         lock_rendered = _render_per_resolution(
             resolutions, lock_output_path, target_date, seed_str, cfg, now, weather, climatology,
             segment_name, lock_mode=True,
+            currency=currency,
         )
         canvas_w = max(x + w for w, h, x, y in geometries)
         canvas_h = max(y + h for w, h, x, y in geometries)

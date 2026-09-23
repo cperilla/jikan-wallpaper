@@ -37,6 +37,11 @@ class ModulesConfig:
     weather: bool = True
     rainfall: bool = True
     solar_geometry: bool = True
+    # USD/COP currency module (為替). Off by default here because the
+    # example location is Tokyo; the module fetches Colombia's official TRM
+    # (see currency.py). Turn on if you want it -- it's a good template for
+    # any fetch-with-cache module.
+    currency: bool = False
 
 
 @dataclass(frozen=True)
@@ -72,6 +77,18 @@ class RainfallConfig:
 
 
 @dataclass(frozen=True)
+class CurrencyConfig:
+    # USD/COP module (為替). Fetched at render time from Colombia's official
+    # TRM (datos.gov.co, no API key); see currency.py.
+    provider: str = "datos.gov.co-trm"
+    timeout_seconds: float = 4.0
+    # Cache TTL / API-politeness knob: a cached rate younger than this is
+    # served with NO network call. Default is just under a 15-minute cycle.
+    min_refresh_seconds: float = 840.0
+    pair_label: str = "USD/COP"
+
+
+@dataclass(frozen=True)
 class HouseConfig:
     # Rotation of the house's cardinal faces, degrees clockwise from true
     # north (0 = perfectly N/E/S/W-aligned rectangle). Only used by the
@@ -90,6 +107,7 @@ class Config:
     wallpaper: WallpaperConfig = field(default_factory=WallpaperConfig)
     weather: WeatherConfig = field(default_factory=WeatherConfig)
     rainfall: RainfallConfig = field(default_factory=RainfallConfig)
+    currency: CurrencyConfig = field(default_factory=CurrencyConfig)
     house: HouseConfig = field(default_factory=HouseConfig)
 
 
@@ -114,5 +132,6 @@ def load_config(path: Path | str = DEFAULT_CONFIG_PATH) -> Config:
         wallpaper=WallpaperConfig(**raw.get("wallpaper", {})),
         weather=WeatherConfig(**raw.get("weather", {})),
         rainfall=RainfallConfig(**raw.get("rainfall", {})),
+        currency=CurrencyConfig(**raw.get("currency", {})),
         house=HouseConfig(**raw.get("house", {})),
     )

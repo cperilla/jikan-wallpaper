@@ -29,6 +29,7 @@ from generative import build_variation, make_rng
 from moon_phase import MoonPhase, moon_phase, moon_position, moon_rise_set_around
 from palette import Palette, SEGMENT_ORDER, SEGMENT_PALETTES, current_palette, current_segment_name, hex_to_oklab, lerp_oklab, oklab_to_hex
 from rainfall import RainfallClimatology
+from currency import CurrencyInfo
 from seasons import current_microseason, current_term, next_term_boundary
 from solar_times import SolarGeometry, solar_geometry, solar_position, sunrise, sunset
 from weather import WeatherInfo
@@ -77,6 +78,21 @@ def _font_size_for_height(font_path: str, sample_char: str, target_px: float) ->
 
 def _esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+# Semantic trend tints for the 為替 module: up = green, down = red, flat =
+# gray. The one place this project uses fixed non-palette hues, because
+# financial up/down carries a near-universal color meaning a mood-shifting
+# palette shouldn't override. Muted so they sit in the low-contrast look.
+_TREND_COLORS = {
+    "up": "#5FAF7A",
+    "down": "#C25B5B",
+    "flat": "#8A8A8A",
+}
+
+
+def _trend_color(trend: str, palette: "Palette") -> str:
+    return _TREND_COLORS.get(trend, _TREND_COLORS["flat"])
 
 
 def _blend_hex(hexcolor: str, mix_with: str | None = None, mix_t: float = 0.0) -> str:
@@ -136,9 +152,10 @@ class _Layout:
         # has no collision risk to budget around.
         self.env_x0 = 1980 * sx
         self.env_x1 = 2320 * sx
-        self.weather_y0 = 140 * sy
-        self.rainfall_y0 = 320 * sy
-        self.solar_y0 = 560 * sy
+        self.currency_y0 = 140 * sy
+        self.weather_y0 = 330 * sy
+        self.rainfall_y0 = 460 * sy
+        self.solar_y0 = 690 * sy
 
 
 def _year_progress_svg(target_date: date, variation, layout: _Layout, palette: Palette) -> str:
@@ -322,23 +339,131 @@ def _weather_svg(cfg: Config, layout: _Layout, palette: Palette, weather: Weathe
 
     header_size = 62 * s
     body_size = 24 * s
-    line_h = 36 * s
     y0 = layout.weather_y0
-    y1 = y0 + 44 * s
-    y2 = y1 + line_h
-    y3 = y2 + line_h
+    # temp + condition on the header baseline; humidity/precip share one
+    # line below -- two rows instead of four, freeing vertical room.
+    inline_x = x + 74 * s
+    detail_y = y0 + 34 * s
+    precip_x = x + 118 * s
 
     return "\n".join([
         f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
         f'font-size="{header_size:.1f}" fill="{palette.accent}">天</text>',
-        f'<text x="{x:.1f}" y="{y1:.1f}" font-family="{text_family}" '
+        f'<text x="{inline_x:.1f}" y="{y0:.1f}" font-family="{text_family}" '
         f'font-size="{body_size:.1f}" fill="{palette.secondary}">'
         f'{weather.temp_c:.0f}°　{_esc(weather.condition_ja)}</text>',
-        f'<text x="{x:.1f}" y="{y2:.1f}" font-family="{text_family}" '
+        f'<text x="{x:.1f}" y="{detail_y:.1f}" font-family="{text_family}" '
         f'font-size="{body_size:.1f}" fill="{palette.secondary}">湿 {weather.humidity_pct}%</text>',
-        f'<text x="{x:.1f}" y="{y3:.1f}" font-family="{text_family}" '
+        f'<text x="{precip_x:.1f}" y="{detail_y:.1f}" font-family="{text_family}" '
         f'font-size="{body_size:.1f}" fill="{palette.secondary}">雨 {weather.precip_probability_pct}%</text>',
     ])
+
+
+def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
+                  currency: "CurrencyInfo | None") -> str:
+    """為替 module: today's USD/COP official TRM with min/max, a semantic
+    trend arrow (green up / red down / gray flat), and a GitHub-style weekly
+    strip of day-kanji cells colored by each day's direction.
+
+    Deliberate exception to the other modules' "omit on failure" rule: it
+    ALWAYS renders and surfaces its state (live / stale / unavailable),
+    because a silently vanished exchange rate is what you'd want to notice.
+    A good template for any fetch-with-cache module (see currency.py)."""
+    text_family = _font_family_css(cfg.fonts.text)
+    display_family = _font_family_css(cfg.fonts.display)
+    s = layout.scale
+    x = layout.env_x0
+    x1 = layout.env_x1
+    pair = _esc(cfg.currency.pair_label)
+
+    header_size = 62 * s
+    body_size = 24 * s
+    small_size = 18 * s
+    line_h = 34 * s
+    y0 = layout.currency_y0
+    y1 = y0 + 44 * s
+    y2 = y1 + line_h
+    strip_y = y2 + 24 * s
+    stale_y = strip_y + 58 * s
+
+    status = getattr(currency, "status", "unavailable") if currency is not None else "unavailable"
+
+    if status == "unavailable" or currency is None or currency.current_rate is None:
+        return "\n".join([
+            f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
+            f'font-size="{header_size:.1f}" fill="{palette.glow}">為替</text>',
+            f'<text x="{x:.1f}" y="{y1:.1f}" font-family="{text_family}" '
+            f'font-size="{body_size:.1f}" fill="{palette.glow}">{pair}</text>',
+            f'<text x="{x:.1f}" y="{y2:.1f}" font-family="{text_family}" '
+            f'font-size="{body_size:.1f}" fill="{palette.glow}">取得不可 N/A</text>',
+        ])
+
+    is_stale = status == "stale"
+    header_color = palette.tertiary if is_stale else palette.accent
+    rate_color = palette.tertiary if is_stale else palette.secondary
+    detail_color = palette.tertiary if is_stale else palette.secondary
+
+    rate_str = f"{currency.current_rate:,.2f}"
+    lo = f"{currency.week_min:,.0f}" if currency.week_min is not None else "—"
+    hi = f"{currency.week_max:,.0f}" if currency.week_max is not None else "—"
+    trend = getattr(currency, "trend", "flat")
+    trend_glyph = {"up": "▲", "down": "▼"}.get(trend, "—")
+    trend_color = palette.tertiary if is_stale else _trend_color(trend, palette)
+
+    parts = [
+        f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
+        f'font-size="{header_size:.1f}" fill="{header_color}">為替</text>',
+        f'<text x="{x:.1f}" y="{y1:.1f}" font-family="{text_family}" '
+        f'font-size="{body_size:.1f}" fill="{rate_color}">{pair} {rate_str} '
+        f'<tspan fill="{trend_color}">{trend_glyph}</tspan></text>',
+        f'<text x="{x:.1f}" y="{y2:.1f}" font-family="{text_family}" '
+        f'font-size="{small_size:.1f}" fill="{detail_color}">安 {lo}　高 {hi}</text>',
+    ]
+
+    days = list(getattr(currency, "days", []) or [])
+    if days:
+        n = len(days)
+        gap = 5 * s
+        avail = (x1 - x)
+        cell = min(22 * s, (avail - gap * (n - 1)) / n)
+        weekday_kanji = weekday_kanji_header()
+        prev_rate = None
+        for i, (iso_date, rate) in enumerate(days):
+            cx = x + i * (cell + gap)
+            if prev_rate is None:
+                day_dir = "flat"
+            elif rate > prev_rate:
+                day_dir = "up"
+            elif rate < prev_rate:
+                day_dir = "down"
+            else:
+                day_dir = "flat"
+            prev_rate = rate
+            fill = palette.tertiary if is_stale else _trend_color(day_dir, palette)
+            opacity = 0.45 if is_stale else 0.85
+            parts.append(
+                f'<rect x="{cx:.1f}" y="{strip_y:.1f}" width="{cell:.1f}" height="{cell:.1f}" '
+                f'rx="{2.5 * s:.1f}" fill="{fill}" opacity="{opacity:.2f}"/>'
+            )
+            try:
+                wd = date.fromisoformat(iso_date).weekday()
+                ch = weekday_kanji[wd]
+            except Exception:
+                ch = ""
+            if ch:
+                parts.append(
+                    f'<text x="{cx + cell / 2:.1f}" y="{strip_y + cell / 2 + 4 * s:.1f}" '
+                    f'font-family="{text_family}" font-size="{11 * s:.1f}" '
+                    f'fill="{palette.background}" text-anchor="middle">{ch}</text>'
+                )
+
+    if is_stale:
+        as_of = _esc(currency.as_of_date or "")
+        parts.append(
+            f'<text x="{x:.1f}" y="{stale_y:.1f}" font-family="{text_family}" '
+            f'font-size="{small_size:.1f}" fill="{palette.tertiary}">古 {as_of}</text>'
+        )
+    return "\n".join(parts)
 
 
 def _rainfall_svg(cfg: Config, layout: _Layout, palette: Palette, target_date: date,
@@ -1177,7 +1302,7 @@ def resolve_palette(target_date: date, now: datetime | None, cfg: Config) -> tup
 
 def compose(target_date: date, seed_str: str, cfg: Config, now: datetime | None = None,
             weather: WeatherInfo | None = None, climatology: RainfallClimatology | None = None,
-            lock_mode: bool = False) -> str:
+            lock_mode: bool = False, currency: "CurrencyInfo | None" = None) -> str:
     variation = build_variation(seed_str)
     layout = _Layout(cfg)
 
@@ -1202,6 +1327,8 @@ def compose(target_date: date, seed_str: str, cfg: Config, now: datetime | None 
         layers.append(_weather_svg(cfg, layout, palette, weather))
     if cfg.modules.rainfall:
         layers.append(_rainfall_svg(cfg, layout, palette, target_date, climatology))
+    if cfg.modules.currency:
+        layers.append(_currency_svg(cfg, layout, palette, currency))
     if cfg.modules.solar_geometry:
         geometry = solar_geometry(target_date, cfg.location.latitude, cfg.location.longitude)
         layers.append(_solar_geometry_svg(cfg, layout, palette, target_date, now, geometry, sr_hour, ss_hour))

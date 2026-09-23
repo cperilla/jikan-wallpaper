@@ -20,6 +20,8 @@ from seasons import current_microseason, current_term
 from solar_times import solar_geometry
 from weather import DEFAULT_CACHE_PATH as WEATHER_CACHE_PATH
 from weather import load_cached_weather
+from currency import DEFAULT_CACHE_PATH as CURRENCY_CACHE_PATH
+from currency import load_cached_currency
 
 GLOSSARY_PATH = Path(__file__).parent / "data" / "kanji_glossary.json"
 
@@ -102,6 +104,30 @@ def explain(target_date: date, cfg, now: datetime | None = None) -> str:
     for ch in ["眠", "日出", "起", "始", "昼", "終", "日没"]:
         lines.append(f"  {ch}   {_gloss(glossary, ch)}")
     lines.append("")
+
+    # Currency (為替): read-only, no live fetch here -- reflects exactly
+    # what the wallpaper's last render showed (see currency.py). Unlike the
+    # other modules this one is shown even when data is missing, matching
+    # the wallpaper's deliberate "surface the failure" behaviour.
+    if cfg.modules.currency:
+        currency = load_cached_currency(CURRENCY_CACHE_PATH)
+        if currency is None or currency.status == "unavailable" or currency.current_rate is None:
+            lines.append(f"{label}exchange rate (為替){_ANSI_RESET}  (unavailable)")
+            lines.append(f"  為替    {_gloss(glossary, '為替')}")
+            lines.append(f"  {cfg.currency.pair_label}   取得不可 {_gloss(glossary, '取得不可')}")
+            lines.append("")
+        else:
+            stale_note = "  (stale cache)" if currency.status == "stale" else (
+                "  (cached)" if currency.is_cached else "")
+            trend_word = {"up": "▲ up", "down": "▼ down", "flat": "— flat"}.get(currency.trend, "")
+            lines.append(f"{label}exchange rate (為替){_ANSI_RESET}{stale_note}")
+            lines.append(f"  為替    {_gloss(glossary, '為替')}")
+            lines.append(f"  {currency.pair}   {currency.current_rate:,.2f}   {trend_word}")
+            lines.append(f"  安 {currency.week_min:,.0f}   {_gloss(glossary, '安')}")
+            lines.append(f"  高 {currency.week_max:,.0f}   {_gloss(glossary, '高')}")
+            if currency.status == "stale" and currency.as_of_date:
+                lines.append(f"  古 {currency.as_of_date}   {_gloss(glossary, '古')}")
+            lines.append("")
 
     # Weather (天): read-only, no live fetch here -- reflects exactly what
     # the wallpaper's last render showed rather than a possibly-different
