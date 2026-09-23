@@ -26,7 +26,8 @@ from wallpaper import detect_output_geometries, set_wallpaper
 from weather import DEFAULT_CACHE_PATH as WEATHER_CACHE_PATH
 from weather import get_weather
 from currency import DEFAULT_CACHE_PATH as CURRENCY_CACHE_PATH
-from currency import get_currency
+from currency import DEFAULT_SPOT_CACHE_PATH as CURRENCY_SPOT_CACHE_PATH
+from currency import combine_spot, get_currency, get_spot
 
 DEFAULT_OUTPUT = Path.home() / ".local" / "state" / "jikan-wallpaper.png"
 DEFAULT_LOCK_OUTPUT = Path.home() / ".local" / "state" / "jikan-lock.png"
@@ -94,6 +95,12 @@ def main(argv: list[str] | None = None) -> int:
     # when a recent cache exists.
     currency = get_currency(CURRENCY_CACHE_PATH, cfg.currency.timeout_seconds,
                             cfg.currency.min_refresh_seconds)
+    # Live spot (現在): a second, independent source (Coinbase), fetched once
+    # and merged. Toggleable, TTL-guarded, fails on its own.
+    if cfg.currency.spot:
+        spot = get_spot(CURRENCY_SPOT_CACHE_PATH, cfg.currency.timeout_seconds,
+                        cfg.currency.spot_min_refresh_seconds)
+        currency = combine_spot(currency, spot)
     svg = compose(target_date, seed_str, cfg, now=now, weather=weather, climatology=climatology,
                   currency=currency)
     rasterize(svg, str(output_path), cfg.display.width, cfg.display.height)

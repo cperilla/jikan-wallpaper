@@ -31,6 +31,8 @@
   "不明": {"reading": "fumei", "meaning": "unknown (fallback for an unrecognized weather code)"},
 
   "為替": {"reading": "kawase", "meaning": "foreign exchange, currency rate"},
+  "現在": {"reading": "genzai", "meaning": "now, current (the live intraday spot rate)"},
+  "公式": {"reading": "koushiki", "meaning": "official (the once-daily TRM reference rate)"},
   "高": {"reading": "kou / taka(i)", "meaning": "high (here: the week's highest rate)"},
   "安": {"reading": "an / yasu(i)", "meaning": "low, cheap (here: the week's lowest rate)"},
   "古": {"reading": "ko / furu(i)", "meaning": "old (here: the shown rate is stale/cached)"},

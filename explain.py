@@ -21,7 +21,8 @@ from solar_times import solar_geometry
 from weather import DEFAULT_CACHE_PATH as WEATHER_CACHE_PATH
 from weather import load_cached_weather
 from currency import DEFAULT_CACHE_PATH as CURRENCY_CACHE_PATH
-from currency import load_cached_currency
+from currency import DEFAULT_SPOT_CACHE_PATH as CURRENCY_SPOT_CACHE_PATH
+from currency import combine_spot, load_cached_currency, load_cached_spot
 
 GLOSSARY_PATH = Path(__file__).parent / "data" / "kanji_glossary.json"
 
@@ -111,22 +112,35 @@ def explain(target_date: date, cfg, now: datetime | None = None) -> str:
     # the wallpaper's deliberate "surface the failure" behaviour.
     if cfg.modules.currency:
         currency = load_cached_currency(CURRENCY_CACHE_PATH)
-        if currency is None or currency.status == "unavailable" or currency.current_rate is None:
+        if cfg.currency.spot and currency is not None:
+            spot = load_cached_spot(CURRENCY_SPOT_CACHE_PATH)
+            currency = combine_spot(currency, (spot[0], spot[1], "live") if spot else None)
+        trm_ok = currency is not None and currency.current_rate is not None and currency.status != "unavailable"
+        spot_rate = getattr(currency, "spot_rate", None) if currency is not None else None
+        if not trm_ok and spot_rate is None:
             lines.append(f"{label}exchange rate (為替){_ANSI_RESET}  (unavailable)")
             lines.append(f"  為替    {_gloss(glossary, '為替')}")
             lines.append(f"  {cfg.currency.pair_label}   取得不可 {_gloss(glossary, '取得不可')}")
             lines.append("")
         else:
-            stale_note = "  (stale cache)" if currency.status == "stale" else (
-                "  (cached)" if currency.is_cached else "")
-            trend_word = {"up": "▲ up", "down": "▼ down", "flat": "— flat"}.get(currency.trend, "")
+            stale_note = "  (stale cache)" if (trm_ok and currency.status == "stale") else (
+                "  (cached)" if (currency is not None and currency.is_cached) else "")
             lines.append(f"{label}exchange rate (為替){_ANSI_RESET}{stale_note}")
             lines.append(f"  為替    {_gloss(glossary, '為替')}")
-            lines.append(f"  {currency.pair}   {currency.current_rate:,.2f}   {trend_word}")
-            lines.append(f"  安 {currency.week_min:,.0f}   {_gloss(glossary, '安')}")
-            lines.append(f"  高 {currency.week_max:,.0f}   {_gloss(glossary, '高')}")
-            if currency.status == "stale" and currency.as_of_date:
-                lines.append(f"  古 {currency.as_of_date}   {_gloss(glossary, '古')}")
+            if spot_rate is not None:
+                spot_word = {"up": "▲ over 公式", "down": "▼ under 公式",
+                             "flat": "— at 公式"}.get(getattr(currency, "spot_trend", ""), "")
+                lines.append(f"  現在 {spot_rate:,.2f}   {_gloss(glossary, '現在')}   {spot_word}")
+            else:
+                lines.append(f"  現在 取得不可   {_gloss(glossary, '現在')}")
+            if trm_ok:
+                lines.append(f"  公式 {currency.current_rate:,.2f}   {_gloss(glossary, '公式')}")
+                lines.append(f"  安 {currency.week_min:,.0f}   {_gloss(glossary, '安')}")
+                lines.append(f"  高 {currency.week_max:,.0f}   {_gloss(glossary, '高')}")
+                if currency.status == "stale" and currency.as_of_date:
+                    lines.append(f"  古 {currency.as_of_date}   {_gloss(glossary, '古')}")
+            else:
+                lines.append(f"  公式 取得不可   {_gloss(glossary, '公式')}")
             lines.append("")
 
     # Weather (天): read-only, no live fetch here -- reflects exactly what

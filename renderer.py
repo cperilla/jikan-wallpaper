@@ -361,14 +361,25 @@ def _weather_svg(cfg: Config, layout: _Layout, palette: Palette, weather: Weathe
 
 def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
                   currency: "CurrencyInfo | None") -> str:
-    """為替 module: today's USD/COP official TRM with min/max, a semantic
-    trend arrow (green up / red down / gray flat), and a GitHub-style weekly
-    strip of day-kanji cells colored by each day's direction.
+    """為替 module: today's USD/COP official TRM with its min/max and an
+    up/down trend arrow, plus a GitHub-style weekly strip -- one cell per
+    previous day, tinted by that day's rate, labelled with the weekday
+    kanji.
 
-    Deliberate exception to the other modules' "omit on failure" rule: it
-    ALWAYS renders and surfaces its state (live / stale / unavailable),
-    because a silently vanished exchange rate is what you'd want to notice.
-    A good template for any fetch-with-cache module (see currency.py)."""
+    DELIBERATE EXCEPTION to the "omit on failure" rule the other
+    environmental modules follow (see weather/rainfall): a silently
+    vanished exchange rate is exactly what you'd want to notice, so this
+    module ALWAYS renders and surfaces its state. Three branches, keyed on
+    `currency.status`:
+
+        live         -> rate in accent, min/max + trend arrow, tinted week strip
+        stale        -> same, muted (tertiary) + a 古 stale marker and the
+                        as-of date, so old data reads as old
+        unavailable  -> a visible 取得不可 stub in the glow (attention) token
+                        instead of disappearing
+
+    A None currency (no data object at all) is treated as unavailable
+    rather than omitted, to preserve that promise."""
     text_family = _font_family_css(cfg.fonts.text)
     display_family = _font_family_css(cfg.fonts.display)
     s = layout.scale
@@ -379,54 +390,95 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
     header_size = 62 * s
     body_size = 24 * s
     small_size = 18 * s
-    line_h = 34 * s
     y0 = layout.currency_y0
-    y1 = y0 + 44 * s
-    y2 = y1 + line_h
-    strip_y = y2 + 24 * s
-    stale_y = strip_y + 58 * s
+    y_spot = y0 + 44 * s       # 現在 (live spot) + trend arrow -- the headline
+    y_trm = y_spot + 30 * s    # 公式 (official TRM)
+    y_mm = y_trm + 30 * s      # week 安/高
+    strip_y = y_mm + 20 * s    # top of the weekly strip cells
+    stale_y = strip_y + 54 * s
 
     status = getattr(currency, "status", "unavailable") if currency is not None else "unavailable"
 
+    # --- unavailable: visible stub, never empty ---
     if status == "unavailable" or currency is None or currency.current_rate is None:
-        return "\n".join([
+        # Even with no official TRM, a live spot may still exist -- show it
+        # if so, else the N/A stub.
+        spot_rate = getattr(currency, "spot_rate", None) if currency is not None else None
+        lines_out = [
             f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
             f'font-size="{header_size:.1f}" fill="{palette.glow}">為替</text>',
-            f'<text x="{x:.1f}" y="{y1:.1f}" font-family="{text_family}" '
-            f'font-size="{body_size:.1f}" fill="{palette.glow}">{pair}</text>',
-            f'<text x="{x:.1f}" y="{y2:.1f}" font-family="{text_family}" '
-            f'font-size="{body_size:.1f}" fill="{palette.glow}">取得不可 N/A</text>',
-        ])
+        ]
+        if spot_rate is not None:
+            lines_out.append(
+                f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
+                f'font-size="{body_size:.1f}" fill="{palette.secondary}">現在 {spot_rate:,.0f}</text>')
+            lines_out.append(
+                f'<text x="{x:.1f}" y="{y_trm:.1f}" font-family="{text_family}" '
+                f'font-size="{body_size:.1f}" fill="{palette.glow}">公式 取得不可</text>')
+        else:
+            lines_out.append(
+                f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
+                f'font-size="{body_size:.1f}" fill="{palette.glow}">{pair}</text>')
+            lines_out.append(
+                f'<text x="{x:.1f}" y="{y_trm:.1f}" font-family="{text_family}" '
+                f'font-size="{body_size:.1f}" fill="{palette.glow}">取得不可 N/A</text>')
+        return "\n".join(lines_out)
 
     is_stale = status == "stale"
     header_color = palette.tertiary if is_stale else palette.accent
-    rate_color = palette.tertiary if is_stale else palette.secondary
+    trm_color = palette.tertiary if is_stale else palette.secondary
     detail_color = palette.tertiary if is_stale else palette.secondary
 
-    rate_str = f"{currency.current_rate:,.2f}"
+    trm_str = f"{currency.current_rate:,.2f}"
     lo = f"{currency.week_min:,.0f}" if currency.week_min is not None else "—"
     hi = f"{currency.week_max:,.0f}" if currency.week_max is not None else "—"
-    trend = getattr(currency, "trend", "flat")
-    trend_glyph = {"up": "▲", "down": "▼"}.get(trend, "—")
-    trend_color = palette.tertiary if is_stale else _trend_color(trend, palette)
+
+    # 現在 (live spot): the headline. Its arrow is spot-vs-TRM (green when
+    # the market trades over the official rate). Muted/omitted per its own
+    # state, independent of the TRM's.
+    spot_rate = getattr(currency, "spot_rate", None)
+    spot_status = getattr(currency, "spot_status", "unavailable")
+    spot_trend = getattr(currency, "spot_trend", "")
+    spot_glyph = {"up": "▲", "down": "▼"}.get(spot_trend, "—")
 
     parts = [
         f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
         f'font-size="{header_size:.1f}" fill="{header_color}">為替</text>',
-        f'<text x="{x:.1f}" y="{y1:.1f}" font-family="{text_family}" '
-        f'font-size="{body_size:.1f}" fill="{rate_color}">{pair} {rate_str} '
-        f'<tspan fill="{trend_color}">{trend_glyph}</tspan></text>',
-        f'<text x="{x:.1f}" y="{y2:.1f}" font-family="{text_family}" '
+    ]
+    # 現在 line (live spot). Show even if spot is stale (muted) or missing.
+    if spot_rate is not None:
+        spot_muted = spot_status == "stale"
+        spot_num_color = palette.tertiary if spot_muted else palette.primary
+        spot_arrow_color = palette.tertiary if spot_muted else _trend_color(spot_trend, palette)
+        stale_tag = ' <tspan font-size="{:.1f}" fill="{}">古</tspan>'.format(small_size, palette.tertiary) if spot_muted else ""
+        parts.append(
+            f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
+            f'font-size="{body_size:.1f}" fill="{spot_num_color}">現在 {spot_rate:,.0f} '
+            f'<tspan fill="{spot_arrow_color}">{spot_glyph}</tspan>{stale_tag}</text>')
+    else:
+        parts.append(
+            f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
+            f'font-size="{body_size:.1f}" fill="{palette.tertiary}">現在 —</text>')
+    # 公式 line (official TRM).
+    parts += [
+        f'<text x="{x:.1f}" y="{y_trm:.1f}" font-family="{text_family}" '
+        f'font-size="{body_size:.1f}" fill="{trm_color}">公式 {trm_str}</text>',
+        # today's week min / max (安 / 高)
+        f'<text x="{x:.1f}" y="{y_mm:.1f}" font-family="{text_family}" '
         f'font-size="{small_size:.1f}" fill="{detail_color}">安 {lo}　高 {hi}</text>',
     ]
 
+    # --- GitHub-style weekly strip: one small cell per day, tinted by that
+    # day's direction vs. the day before (green up / red down / gray flat).
+    # The first shown day has no predecessor, so it's flat/gray. ---
     days = list(getattr(currency, "days", []) or [])
     if days:
         n = len(days)
         gap = 5 * s
+        # Smaller cells than before: cap at 22px, still fit the column width.
         avail = (x1 - x)
         cell = min(22 * s, (avail - gap * (n - 1)) / n)
-        weekday_kanji = weekday_kanji_header()
+        weekday_kanji = weekday_kanji_header()  # Mon..Sun
         prev_rate = None
         for i, (iso_date, rate) in enumerate(days):
             cx = x + i * (cell + gap)
@@ -445,8 +497,9 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
                 f'<rect x="{cx:.1f}" y="{strip_y:.1f}" width="{cell:.1f}" height="{cell:.1f}" '
                 f'rx="{2.5 * s:.1f}" fill="{fill}" opacity="{opacity:.2f}"/>'
             )
+            # Weekday kanji embedded in the cell.
             try:
-                wd = date.fromisoformat(iso_date).weekday()
+                wd = date.fromisoformat(iso_date).weekday()  # 0=Mon
                 ch = weekday_kanji[wd]
             except Exception:
                 ch = ""
@@ -458,6 +511,7 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
                 )
 
     if is_stale:
+        # 古 = "old": mark the data as no longer fresh, with its as-of date.
         as_of = _esc(currency.as_of_date or "")
         parts.append(
             f'<text x="{x:.1f}" y="{stale_y:.1f}" font-family="{text_family}" '

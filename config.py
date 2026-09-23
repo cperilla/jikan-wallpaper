@@ -78,14 +78,17 @@ class RainfallConfig:
 
 @dataclass(frozen=True)
 class CurrencyConfig:
-    # USD/COP module (為替). Fetched at render time from Colombia's official
-    # TRM (datos.gov.co, no API key); see currency.py.
+    # USD/COP module (為替). Two sources: the official once-daily TRM (公式,
+    # datos.gov.co) and a live intraday spot (現在, Coinbase). See currency.py.
     provider: str = "datos.gov.co-trm"
     timeout_seconds: float = 4.0
-    # Cache TTL / API-politeness knob: a cached rate younger than this is
-    # served with NO network call. Default is just under a 15-minute cycle.
-    min_refresh_seconds: float = 840.0
+    # TRM changes at most once a business day, so its cache TTL is long.
+    min_refresh_seconds: float = 21600.0
     pair_label: str = "USD/COP"
+    # Live spot (現在): the intraday "current" rate, with its own shorter TTL.
+    spot: bool = True
+    spot_provider: str = "coinbase"
+    spot_min_refresh_seconds: float = 840.0
 
 
 @dataclass(frozen=True)

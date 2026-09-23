@@ -59,21 +59,27 @@ timeout_seconds = 4.0
 data_path = "data/rainfall_climatology.json"
 
 [currency]
-# USD/COP exchange rate for the 為替 module: today's official TRM (Tasa
-# Representativa del Mercado) with min/max + trend, and a GitHub-style
-# weekly strip. Fetched at render time from Colombia's open-data TRM
-# dataset (datos.gov.co, no API key) -- see currency.py. This module is
-# Colombia-specific; enable it in [modules] only if that's useful to you.
+# USD/COP exchange rate for the 為替 module. Two independent sources:
+#   公式 (official) -- the once-daily TRM (Tasa Representativa del Mercado)
+#     from Colombia's open-data dataset (datos.gov.co, no API key). Drives
+#     the week high/low (安/高) and the GitHub-style weekly strip.
+#   現在 (current)  -- a live intraday spot from Coinbase (no key, the same
+#     source the `forx` CLI uses). Its trend arrow is current-vs-TRM.
+# This module is Colombia-specific; enable it in [modules] only if useful.
 #
 # Unlike the other environmental modules it does NOT vanish on failure: it
-# always renders and shows its state (live / stale-cached / unavailable),
+# always renders each source's state (live / stale-cached / unavailable),
 # because a silently missing rate is exactly what you'd want to notice.
 provider = "datos.gov.co-trm"
 timeout_seconds = 4.0
-# API-politeness / cache-TTL knob: a cached rate younger than this is
-# served with NO network call. Default is just under a 15-minute cycle.
-min_refresh_seconds = 840.0
+# TRM cache TTL: it changes at most once a business day, so a cached value
+# younger than this is served with NO network call. ~6 h.
+min_refresh_seconds = 21600.0
 pair_label = "USD/COP"
+# Live spot (現在): toggle, source, and its own shorter cache TTL (~15 min).
+spot = true
+spot_provider = "coinbase"
+spot_min_refresh_seconds = 840.0
 
 [house]
 # Rotation of the house's cardinal faces, degrees clockwise from true
