@@ -391,10 +391,9 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
     body_size = 24 * s
     small_size = 18 * s
     y0 = layout.currency_y0
-    y_spot = y0 + 44 * s       # 現在 (live spot) + trend arrow -- the headline
-    y_trm = y_spot + 30 * s    # 公式 (official TRM)
-    y_mm = y_trm + 30 * s      # week 安/高
-    strip_y = y_mm + 20 * s    # top of the weekly strip cells
+    y_spot = y0 + 44 * s       # 現在 + 公式 side by side -- the rate line
+    y_trm = y_spot + 30 * s     # week 安/高 (one row up now that 現在/公式 share a line)
+    strip_y = y_trm + 20 * s    # top of the weekly strip cells
     stale_y = strip_y + 54 * s
 
     status = getattr(currency, "status", "unavailable") if currency is not None else "unavailable"
@@ -445,7 +444,10 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
         f'<text x="{x:.1f}" y="{y0:.1f}" font-family="{display_family}" '
         f'font-size="{header_size:.1f}" fill="{header_color}">為替</text>',
     ]
-    # 現在 line (live spot). Show even if spot is stale (muted) or missing.
+    # 現在 (live spot) and 公式 (official TRM) side by side on one line: the
+    # live figure leads, the official sits to its right as a muted anchor.
+    trm_tspan = (f'　<tspan font-size="{small_size:.1f}" fill="{trm_color}">'
+                 f'公式 {trm_str}</tspan>')
     if spot_rate is not None:
         spot_muted = spot_status == "stale"
         spot_num_color = palette.tertiary if spot_muted else palette.primary
@@ -454,19 +456,16 @@ def _currency_svg(cfg: Config, layout: _Layout, palette: Palette,
         parts.append(
             f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
             f'font-size="{body_size:.1f}" fill="{spot_num_color}">現在 {spot_rate:,.0f} '
-            f'<tspan fill="{spot_arrow_color}">{spot_glyph}</tspan>{stale_tag}</text>')
+            f'<tspan fill="{spot_arrow_color}">{spot_glyph}</tspan>{stale_tag}{trm_tspan}</text>')
     else:
+        # No spot -> show the 現在 placeholder, still with 公式 beside it.
         parts.append(
             f'<text x="{x:.1f}" y="{y_spot:.1f}" font-family="{text_family}" '
-            f'font-size="{body_size:.1f}" fill="{palette.tertiary}">現在 —</text>')
-    # 公式 line (official TRM).
-    parts += [
+            f'font-size="{body_size:.1f}" fill="{palette.tertiary}">現在 —{trm_tspan}</text>')
+    # week min / max (安 / 高), now directly under the combined rate line.
+    parts.append(
         f'<text x="{x:.1f}" y="{y_trm:.1f}" font-family="{text_family}" '
-        f'font-size="{body_size:.1f}" fill="{trm_color}">公式 {trm_str}</text>',
-        # today's week min / max (安 / 高)
-        f'<text x="{x:.1f}" y="{y_mm:.1f}" font-family="{text_family}" '
-        f'font-size="{small_size:.1f}" fill="{detail_color}">安 {lo}　高 {hi}</text>',
-    ]
+        f'font-size="{small_size:.1f}" fill="{detail_color}">安 {lo}　高 {hi}</text>')
 
     # --- GitHub-style weekly strip: one small cell per day, tinted by that
     # day's direction vs. the day before (green up / red down / gray flat).
